@@ -105,26 +105,50 @@ tracker = Staccato.tracker('UA-XXXX-Y') do |c|
 end
 
 class CustomAdapter
+  attr_reader :uri
+  def initialize(uri, options={})
+    @uri = uri
+    @options = options
+  end
+  def post(data)
+    Net::HTTP::Post.new(uri.request_uri).tap do |request|
+      request.read_timeout = @options.fetch(:read_timeout, 90)
+      request.form_data = data
+      execute(request)
+    end
+  end
+  private
+  def execute(request)
+    Net::HTTP.new(uri.hostname, uri.port).start do |http|
+      http.open_timeout = @options.fetch(:open_timeout, 90)
+      http.request(request)
+    end
+  end
 end
 
-tracker = Staccato.tracker() do
+tracker = Staccato.tracker('UA-XXXX-Y') do |c|
+  c.adapter = CustomAdapter.new(Staccato.ga_collection_uri, read_timeout: 1, open_time: 1)
 end
 
-require ''
-tracker = Staccato.tracker() do ||
+require 'staccato/adapter/validate'
+tracker = Staccato.tracker('UA-XXXX-Y') do |c|
+  c.adapter = Staccato::Adapter::Validate.new
 end
 
-puts tracker.pageview()
+puts tracker.pageview(path: '/')
 
-tracker = Staccato.tracker() do ||
+tracker = Staccato.tracker('UA-XXXX-Y') do |c|
+  c.adapter = Staccato::Adapter::Validate.new(Staccato::Adapter::HTTP)
 end
 
-require ''
-tracker = Staccato.tracker() do ||
+require 'staccato/adapter/udp'
+tracker = Staccato.tracker('UA-XXXX-Y') do |c|
+  c.adapter = Staccato::Adapter::UDP.new(URI('udp://127.0.0.1:3003'))
 end
 
-require ''
-tracker = Staccato.tracker() do ||
+require 'staccato/adapter/logger'
+tracker = Staccato.tracker('UA-XXXX-Y') do |c|
+  c.adapter = Staccato::Adapter::Logger.new(Staccato.ga_collection_uri, Logger.new(STDOUT), lambda {|params| JSON.dump(params)})
 end
 
 event = tracker.build_event({
