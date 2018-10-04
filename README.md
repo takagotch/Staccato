@@ -12,52 +12,89 @@ gem install staccato
 ```ruby
 tracker = Staccato.tracker('UA-XXXX-Y')
 tracker = Staccato.tracker('UA-XXXX-Y', nil, ssl: true)
-tracker.pageview(path: '', hostname: '', title: '')
-tracker.event()
-tracker.social()
-tracker.exception()
-tracker.timing()
-tracker.timing()
-tracker.timing() do
+tracker.pageview(path: '/page-path', hostname: 'mysite.com', title: 'A Page!')
+tracker.event(category: 'video', action: 'play', label: 'cars', value: 1)
+tracker.social(action: 'like', network: 'facebook', target: '/something')
+tracker.exception(description: 'RuntimeException', fatal: true)
+tracker.timing(category: 'runtime', variable: 'db', label: 'query', time: 50)
+tracker.timing(categoryL 'runtime', variable: 'db', label: 'query') do
   some_code_here
 end
 
-tracker.transaction()
+tracker.transaction({
+  transaction_id: 12345,
+  affiliation: 'clothing',
+  revenue: 17.98,
+  shipping: 2.00,
+  tax: 2.50,
+  currency: 'EUR'
+})
 
-tracker.transaction_item()
+tracker.transaction_item({
+  transaction_id: 12345,
+  name: 'Shirt',
+  price: 8.99,
+  code: 'afhcka1230',
+  variation: 'red',
+  curency: 'EUR'
+})
 
 tracker.pageview(options_hash)
-tracker.pageview().track!
-hit = Staccato::Pageview.new()
+tracker.pageview(options_hash).track!
+hit = Staccato::Pageview.new(tracker, options_hash)
 hit.track!
 
-tracker.pageview(path: '', flash_version: '')
+tracker.pageview(path: '/video/1235', flash_version: 'v1.2.3')
 
 Staccato::Hit::GLOBAL_OPTIONS.keys
-[]
+#=>[:annoyize_ip,
+    :queue_time,
+    ...]
 
-hit = Staccato::Pageview.new()
-hit.add_custom_dimension(19, '')
+hit = Staccato::Pageview.new(tracker, hostname: 'mysite.com', path: '/sports-page-5', title: 'Sports Page #5')
+hit.add_custom_dimension(19, 'Sports')
 hit.add_custom_metric(2, 5)
 hit.track!
 
-tracker.event()
+tracker.event(category: 'video', action: 'play', non_interactive: true)
 
-tracker.pageview()
-tracker.pageview()
+tracker.pageview(path: '/blog', start_session: true)
+tracker.pageview(path: '/blog', end_session: true)
 
-tracker.pageview({})
+tracker.pageview({
+  path: '/blog',
+  experiment_id: 'a7a8d91f',
+  experiment_variant: 'a'
+})
 
-tracker = Staccato.tracker()
-tracker.pageview()
-tracker.pageview()
+tracker = Staccato.tracker('UA-XXXX-Y', client_id, {document_hostname: 'ex.com'})
+tracker.pageview(path: '/videos/123')
+tracker.pageview(path: '/videos/987')
 
-pageview = tracker.build_pageview()
-pageview.add_measurement()
-pageview.add_measurement()
+pageview = tracker.build_pageview(path: '/receipt', hostname: 'mystore.com', title: 'Your Receipt', product_action: 'purchase')
+pageview.add_measurement(:transaction, {
+  transaction_id: '',
+  affiliation: '',
+  revenue: ,
+  tax: ,
+  shipping: ,
+  currency: '',
+  coupon_code: ''
+})
+pageview.add_measurement(:product, {
+  index: 1,
+  id: '',
+  category: '',
+  brand: '',
+  variant: '',
+  position: 1,
+  price: 14.60,
+  coupon_code: ''
+})
+pageview.track!
 
-event = tracker.build_event()
-event.add_measurement()
+event = tracker.build_event(category: '', action: 'refund', non_interactive: true, product_action: 'refund')
+event.add_measurement(:transaction, transaction_id: '')
 event.track!
 
 event = tracker.build_event()
@@ -94,7 +131,9 @@ pageview.add_measurement()
 pageview.add_measurement(0
 pageview.track!
 
-tracker.screenview()
+tracker.screenview({
+  screen_name: 'user1'
+})
 
 ```
 ```ruby
