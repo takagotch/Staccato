@@ -97,38 +97,93 @@ event = tracker.build_event(category: '', action: 'refund', non_interactive: tru
 event.add_measurement(:transaction, transaction_id: '')
 event.track!
 
-event = tracker.build_event()
-event.add_measurement()
-event.add_mesurement()
+event = tracker.build_event(category: '', action: 'refund', non_interactive: true, product_action: 'refund')
+event.add_measurement(:transaction, transaction_id: '')
+event.add_mesurement(:product, index: 1, id: '', quantity: 1)
 event.track!
 
-pageview = tracker.build_pageview()
-pageview.add_measurement(0
+pageview = tracker.build_pageview(path: '', hostname: '', title: '')
+pageview.add_measurement(:promotion, {
+  index: 1,
+  id: '',
+  name: '',
+  creative: '',
+  position: ''
+})
 pageview.track!
 
-event = tracker.build_event()
-event.add_measurement()
+event = tracker.build_event(category: '', action: '', label: '', product_action: '')
+event.add_measurement(:promotion, {
+  index: 1,
+  id: '',
+  name: '',
+  creative: '',
+  position: ''
+})
 event.track!
 
-event = tracker.build_event()
-event.add_mesurement()
+event = tracker.build_event(category: '', action: '', label: '', product_action: '', product_action_list: '')
+event.add_mesurement(:product, {
+  index: 1,
+  id: ''
+  name: '',
+  category: '',
+  brand: '',
+  variant: '',
+  quantity: 2,
+  position: 1,
+  price: 14.60,
+  coupon_code: ''
+})
 event.track!
 
-pageview = tracker.build_pageview()
-pageview.add_measurement()
+# CheckOut
+pageview = tracker.build_pageview(path: '/checkout', hostname: 'mystore.com', title: 'Complete Your Checkout', product_action: 'checkout')
+pageview.add_measurement(:product, {
+  index: 1,
+  id: '',
+  name: '',
+  category: '',
+  brand: '',
+  variant: '',
+  quantity: 2,
+  position: 1,
+  price: 14.60,
+  coupon_code: ''
+})
 pageview.add_measurement()
 pageview.track!
 
-event = tracker.build_event()
-event.add_measurement()
+event = tracker.build_event(category: 'checkout', action: 'option', non_interactive: true, product_action: 'checkout_option')
+event.add_measurement(:checkout_options, {
+  step: 2,
+  step_option: 'Fedex'
+})
 event.track!
 
-pageview = tracker.build_pageview()
-pageview.add_measurement()
-pageview.add_measurement()
-pageview.add_measurement()
-pageview.add_measurement()
-pageview.add_measurement(0
+pageview = tracker.build_pageview(path: '/home', hostname: 'mystore.com', title: 'Home Page')
+pageview.add_measurement(:impression_list, index: 1, name: 'Search Results')
+pageview.add_measurement(:product_impression, {
+  index: 1,
+  list_index: 1
+  name: 'T-Shirt',
+  category: 'Apparel',
+  brand: 'Your Brand',
+  variant: 'Purple',
+  position: 1
+  price: 14.60
+})
+pageview.add_measurement(:impression_list, index: 2, name: 'Recommendations')
+pageview.add_measurement(:product_impression, {
+  index: 2,
+  list_index: 2,
+  name: 'Yellow Tee'
+})
+pageview.add_measurement(:product_impression, {
+  index: 2
+  list_index: 2,
+  name: 'Red Tee'
+})
 pageview.track!
 
 tracker.screenview({
